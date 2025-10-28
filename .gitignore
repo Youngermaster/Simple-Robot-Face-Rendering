@@ -39,3 +39,15 @@
 
 # debug information files
 *.dwo
+
+# Project specific
+build/
+*.wasm
+*.js
+*.html.mem
+*.data
+emsdk/
+skia/
+.DS_Store
+*.pyc
+__pycache__/
