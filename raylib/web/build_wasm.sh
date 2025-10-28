@@ -24,19 +24,27 @@ echo -e "${GREEN}✓${NC} Emscripten found: $(emcc --version | head -n 1)"
 # Create output directory
 mkdir -p web_output
 
-# Check for raylib
-RAYLIB_PATH="/opt/homebrew"
-if [ ! -f "$RAYLIB_PATH/lib/libraylib.a" ]; then
-    echo -e "${YELLOW}Warning: Raylib not found at $RAYLIB_PATH${NC}"
-    echo "Attempting to build with system raylib..."
+# Clone raylib if not present
+if [ ! -d "raylib_src" ]; then
+    echo -e "${YELLOW}Cloning Raylib 5.5 for WASM build...${NC}"
+    git clone --depth 1 --branch 5.5 https://github.com/raysan5/raylib.git raylib_src
 fi
 
-echo -e "${YELLOW}Building WASM...${NC}"
+# Build raylib library for web if not already built
+if [ ! -f "raylib_src/src/libraylib.a" ]; then
+    echo -e "${YELLOW}Building Raylib library for WASM...${NC}"
+    cd raylib_src/src
+    make PLATFORM=PLATFORM_WEB -j4
+    cd ../..
+fi
 
-# Build Raylib for WASM
-# Note: We're using a simpler approach - compile directly with emscripten
+echo -e "${YELLOW}Building robot face WASM...${NC}"
+
+# Build the robot face with the raylib library
 emcc ../src/robot_face_raylib.c \
     -o web_output/robot_face_raylib.html \
+    -I raylib_src/src \
+    raylib_src/src/libraylib.a \
     -s USE_GLFW=3 \
     -s ASYNCIFY \
     -s TOTAL_MEMORY=67108864 \
@@ -44,50 +52,20 @@ emcc ../src/robot_face_raylib.c \
     -DPLATFORM_WEB \
     -Os \
     -Wall \
-    -I/opt/homebrew/include \
-    -L/opt/homebrew/lib \
-    -lraylib \
-    --shell-file shell_minimal.html \
-    || echo -e "${RED}Build failed. Trying alternative method...${NC}"
-
-# If the above fails, try building raylib from source for WASM
-if [ ! -f "web_output/robot_face_raylib.html" ]; then
-    echo -e "${YELLOW}Attempting to build with embedded raylib...${NC}"
-
-    # Clone raylib if not present
-    if [ ! -d "raylib_src" ]; then
-        git clone --depth 1 --branch 5.5 https://github.com/raysan5/raylib.git raylib_src
-    fi
-
-    # Build with raylib source
-    emcc ../src/robot_face_raylib.c \
-        raylib_src/src/rcore.c \
-        raylib_src/src/rshapes.c \
-        raylib_src/src/rtextures.c \
-        raylib_src/src/rtext.c \
-        raylib_src/src/rmodels.c \
-        raylib_src/src/utils.c \
-        raylib_src/src/raudio.c \
-        -o web_output/robot_face_raylib.html \
-        -I raylib_src/src \
-        -I raylib_src/src/external \
-        -L raylib_src/src \
-        -s USE_GLFW=3 \
-        -s ASYNCIFY \
-        -s TOTAL_MEMORY=67108864 \
-        -s ALLOW_MEMORY_GROWTH=1 \
-        -s GL_ENABLE_GET_PROC_ADDRESS=1 \
-        -DPLATFORM_WEB \
-        -DGRAPHICS_API_OPENGL_ES2 \
-        -Os \
-        -Wall
-fi
+    --shell-file shell_minimal.html
 
 if [ -f "web_output/robot_face_raylib.html" ]; then
     echo -e "${GREEN}✓ Build successful!${NC}"
     echo ""
     echo "Output files:"
     ls -lh web_output/
+    echo ""
+    if [ -f "web_output/robot_face_raylib.wasm" ]; then
+        WASM_SIZE=$(du -h web_output/robot_face_raylib.wasm | awk '{print $1}')
+        JS_SIZE=$(du -h web_output/robot_face_raylib.js | awk '{print $1}')
+        echo "WASM size: ${WASM_SIZE}"
+        echo "JS size: ${JS_SIZE}"
+    fi
     echo ""
     echo "To test, run:"
     echo "  cd web_output && python3 -m http.server 8000"
