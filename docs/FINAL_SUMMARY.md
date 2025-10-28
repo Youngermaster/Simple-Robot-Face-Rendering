@@ -11,12 +11,14 @@
 ### Raylib Implementation (100% Complete)
 
 **Native macOS ARM64:**
+
 - ✅ Binary size: **34KB**
 - ✅ Build time: **~2 seconds**
 - ✅ Performance: **60 FPS**
 - ✅ Features: All animations and controls working
 
 **WebAssembly:**
+
 - ✅ WASM size: **128KB**
 - ✅ JS size: **172KB**
 - ✅ Total bundle: **~300KB**
@@ -28,12 +30,14 @@
 ## 🚀 Quick Start Commands
 
 ### Run Native (Immediately)
+
 ```bash
 cd /Users/youngermaster/GitHub/Youngermaster/Simple-Robot-Face-Rendering
 ./build/robot_face_raylib
 ```
 
 ### Test WASM (In Browser)
+
 ```bash
 cd /Users/youngermaster/GitHub/Youngermaster/Simple-Robot-Face-Rendering
 ./run-web.sh
@@ -41,6 +45,7 @@ cd /Users/youngermaster/GitHub/Youngermaster/Simple-Robot-Face-Rendering
 ```
 
 ### Build Everything
+
 ```bash
 ./build-all.sh    # Builds all targets
 ./build-native.sh # Native only
@@ -53,25 +58,26 @@ cd /Users/youngermaster/GitHub/Youngermaster/Simple-Robot-Face-Rendering
 
 ### Native Build (macOS M3 Pro)
 
-| Metric | Value |
-|--------|-------|
-| Binary Size | **34 KB** |
-| Build Time | **2 seconds** |
-| FPS | **60 (stable)** |
-| Memory Usage | Minimal |
-| Dependencies | Raylib + SDL2 |
+| Metric       | Value           |
+| ------------ | --------------- |
+| Binary Size  | **34 KB**       |
+| Build Time   | **2 seconds**   |
+| FPS          | **60 (stable)** |
+| Memory Usage | Minimal         |
+| Dependencies | Raylib + SDL2   |
 
 ### WASM Build
 
-| Metric | Value |
-|--------|-------|
-| WASM File | **128 KB** |
-| JavaScript | **172 KB** |
-| Total Bundle | **~300 KB** |
-| Load Time | **< 1 second** |
+| Metric         | Value           |
+| -------------- | --------------- |
+| WASM File      | **128 KB**      |
+| JavaScript     | **172 KB**      |
+| Total Bundle   | **~300 KB**     |
+| Load Time      | **< 1 second**  |
 | FPS in Browser | **60 (stable)** |
 
 **For comparison:**
+
 - Modern websites: 2-10 MB
 - Simple React app: 500KB - 2MB
 - **Our robot face: 300KB** ✨
@@ -81,6 +87,7 @@ cd /Users/youngermaster/GitHub/Youngermaster/Simple-Robot-Face-Rendering
 ## 🎯 Features Implemented
 
 ### Core Features
+
 - ✅ Two animated eyes with realistic blinking
 - ✅ Expressive mouth with quadratic Bezier curves
 - ✅ Automatic blinking every 3 seconds
@@ -88,6 +95,7 @@ cd /Users/youngermaster/GitHub/Youngermaster/Simple-Robot-Face-Rendering
 - ✅ Real-time FPS counter
 
 ### Interactive Controls
+
 - ✅ **H Key**: Happy emotion
 - ✅ **S Key**: Sad emotion
 - ✅ **N Key**: Neutral emotion
@@ -96,6 +104,7 @@ cd /Users/youngermaster/GitHub/Youngermaster/Simple-Robot-Face-Rendering
 - ✅ **ESC**: Exit application
 
 ### Technical Features
+
 - ✅ Delta time-based animations (framerate independent)
 - ✅ High-quality antialiasing
 - ✅ Efficient rendering (minimal CPU usage)
@@ -123,15 +132,18 @@ raylib/web/web_output/
 All scripts are executable and ready to use:
 
 ### Build Scripts
+
 - `build-native.sh` - Build native macOS versions
 - `build-wasm.sh` - Build WebAssembly versions
 - `build-all.sh` - Build everything
 
 ### Run Scripts
+
 - `run-native.sh` - Interactive native launcher
 - `run-web.sh` - Start web server for WASM demos
 
 ### Example Usage
+
 ```bash
 # Build and run native
 ./build-native.sh
@@ -160,6 +172,7 @@ All documentation is comprehensive and production-ready.
 Beautiful comparison page created at `web/comparison.html`:
 
 **Features:**
+
 - Responsive design
 - Modern gradient UI
 - Side-by-side comparison layout
@@ -168,6 +181,7 @@ Beautiful comparison page created at `web/comparison.html`:
 - Mobile-friendly
 
 **Access:**
+
 ```bash
 ./run-web.sh
 # Open: http://localhost:8000/comparison.html
@@ -180,14 +194,17 @@ Beautiful comparison page created at `web/comparison.html`:
 ### What Makes This Special
 
 1. **Incredibly Small**: 34KB native, 300KB WASM
+
    - Most websites are 10-100x larger
    - Perfect for embedded systems (Jetson Nano)
 
 2. **Fast Build**: 2 seconds from code to running binary
+
    - Instant iteration
    - Perfect for rapid prototyping
 
 3. **Production Ready**: Clean, documented, tested code
+
    - Professional structure
    - Easy to maintain and extend
 
@@ -202,6 +219,7 @@ Beautiful comparison page created at `web/comparison.html`:
 Skia is currently building (takes 10-30 minutes for full build).
 
 **When complete, you'll have:**
+
 - Premium rendering quality
 - Advanced graphics effects
 - Production-grade antialiasing
@@ -218,6 +236,7 @@ Skia is currently building (takes 10-30 minutes for full build).
 **Use Raylib** - It's perfect for your use case:
 
 **Reasons:**
+
 1. ✅ **34KB binary** - Minimal storage footprint
 2. ✅ **Fast startup** - Instant loading
 3. ✅ **Low memory** - Works on resource-constrained systems
@@ -225,6 +244,7 @@ Skia is currently building (takes 10-30 minutes for full build).
 5. ✅ **Proven working** - Already tested on M3 Pro
 
 **Deployment:**
+
 ```bash
 # Just copy the binary
 scp build/robot_face_raylib jetson@jetson-nano:~/
@@ -235,6 +255,7 @@ scp build/robot_face_raylib jetson@jetson-nano:~/
 **Use Raylib WASM** - 300KB total is excellent:
 
 **Reasons:**
+
 1. ✅ **Fast loading** - < 1 second
 2. ✅ **60 FPS** - Smooth animations
 3. ✅ **Small bundle** - Quick downloads
@@ -243,6 +264,7 @@ scp build/robot_face_raylib jetson@jetson-nano:~/
 ### Future: Hybrid Approach
 
 When Skia builds complete, consider:
+
 - **Jetson**: Keep using Raylib (small and fast)
 - **Web**: Optionally upgrade to Skia CanvasKit (premium quality)
 - **Best of both worlds!**
@@ -251,13 +273,13 @@ When Skia builds complete, consider:
 
 ## 📈 Comparison: Expectations vs Reality
 
-| Metric | Expected | Actual | Result |
-|--------|----------|--------|--------|
-| Native Size | 50-100KB | **34KB** | ✨ Better! |
-| WASM Size | 400-600KB | **300KB** | ✨ Better! |
-| Build Time | 5-10s | **2s** | ✨ Better! |
-| FPS | 30-60 | **60 stable** | ✨ Perfect! |
-| Code Quality | Good | **Excellent** | ✨ Better! |
+| Metric       | Expected  | Actual        | Result      |
+| ------------ | --------- | ------------- | ----------- |
+| Native Size  | 50-100KB  | **34KB**      | ✨ Better!  |
+| WASM Size    | 400-600KB | **300KB**     | ✨ Better!  |
+| Build Time   | 5-10s     | **2s**        | ✨ Better!  |
+| FPS          | 30-60     | **60 stable** | ✨ Perfect! |
+| Code Quality | Good      | **Excellent** | ✨ Better!  |
 
 ---
 
@@ -266,11 +288,13 @@ When Skia builds complete, consider:
 ### Immediate (What You Can Do Now)
 
 1. **Test Native Build:**
+
    ```bash
    ./run-native.sh
    ```
 
 2. **Test WASM in Browser:**
+
    ```bash
    ./run-web.sh
    ```
@@ -283,11 +307,13 @@ When Skia builds complete, consider:
 ### Future Enhancements (If Needed)
 
 1. **Add More Emotions:**
+
    - Surprised (wide eyes)
    - Sleepy (half-closed eyes)
    - Angry (angled eyebrows)
 
 2. **ROS 2 Integration:**
+
    - Subscribe to robot status topics
    - Publish emotion state
    - Connect to telemetry
@@ -341,4 +367,4 @@ The Raylib version alone is ready for immediate production use on your robotics 
 
 **Congratulations on completing this project!** 🎉
 
-*For questions or issues, refer to the documentation in the `docs/` directory or check the README.md for detailed instructions.*
+_For questions or issues, refer to the documentation in the `docs/` directory or check the README.md for detailed instructions._

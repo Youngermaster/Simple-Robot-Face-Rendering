@@ -11,6 +11,7 @@ This document compares two popular graphics libraries—**Skia** and **Raylib**�
 ### ✅ Completed
 
 **Raylib Implementation:**
+
 - [x] Native macOS ARM64 build (34KB binary)
 - [x] Full C implementation with animations
 - [x] Interactive controls (keyboard + mouse)
@@ -20,6 +21,7 @@ This document compares two popular graphics libraries—**Skia** and **Raylib**�
 - [ ] WASM build tested (pending)
 
 **Skia Implementation:**
+
 - [x] C++ implementation with advanced rendering
 - [x] High-quality antialiasing
 - [x] Smooth animations with proper delta time
@@ -27,6 +29,7 @@ This document compares two popular graphics libraries—**Skia** and **Raylib**�
 - [ ] WASM CanvasKit integration (pending)
 
 **Project Infrastructure:**
+
 - [x] CMake build system
 - [x] Emscripten setup (v4.0.18)
 - [x] Web comparison interface
@@ -38,42 +41,46 @@ This document compares two popular graphics libraries—**Skia** and **Raylib**�
 
 ### Raylib
 
-| Metric | Value | Notes |
-|--------|-------|-------|
-| **Binary Size** | 34 KB | Extremely compact executable |
-| **Expected FPS** | 60 fps | Target framerate |
-| **Build Time** | ~2 seconds | Very fast compilation |
-| **Dependencies** | Minimal | Only Raylib + SDL2 |
-| **Lines of Code** | ~180 | Simple and readable |
+| Metric            | Value      | Notes                        |
+| ----------------- | ---------- | ---------------------------- |
+| **Binary Size**   | 34 KB      | Extremely compact executable |
+| **Expected FPS**  | 60 fps     | Target framerate             |
+| **Build Time**    | ~2 seconds | Very fast compilation        |
+| **Dependencies**  | Minimal    | Only Raylib + SDL2           |
+| **Lines of Code** | ~180       | Simple and readable          |
 
 **Strengths:**
+
 - ⚡ Lightning-fast build times
 - 📦 Tiny binary size
 - 🎯 Simple, intuitive API
 - 🚀 Quick to prototype
 
 **Trade-offs:**
+
 - Basic rendering quality (good but not premium)
 - Simpler effects compared to Skia
 - Less control over advanced graphics features
 
 ### Skia
 
-| Metric | Value | Notes |
-|--------|-------|-------|
-| **Binary Size** | TBD | Expected ~1-2 MB (statically linked) |
-| **Expected FPS** | 60 fps | Hardware accelerated |
-| **Build Time** | 10-30 mins | Full Skia build from source |
-| **Dependencies** | Complex | Full Chromium depot_tools |
-| **Lines of Code** | ~240 | More verbose but powerful |
+| Metric            | Value      | Notes                                |
+| ----------------- | ---------- | ------------------------------------ |
+| **Binary Size**   | TBD        | Expected ~1-2 MB (statically linked) |
+| **Expected FPS**  | 60 fps     | Hardware accelerated                 |
+| **Build Time**    | 10-30 mins | Full Skia build from source          |
+| **Dependencies**  | Complex    | Full Chromium depot_tools            |
+| **Lines of Code** | ~240       | More verbose but powerful            |
 
 **Strengths:**
+
 - 🎨 Production-grade rendering quality
 - ✨ Advanced antialiasing and effects
 - 🌐 Used by Chrome, Android, Flutter
 - 💪 Battle-tested at scale
 
 **Trade-offs:**
+
 - Large binary size
 - Complex build system
 - Longer compile times
@@ -86,6 +93,7 @@ This document compares two popular graphics libraries—**Skia** and **Raylib**�
 ### Raylib: ⭐⭐⭐⭐⭐ (5/5)
 
 **Pros:**
+
 - Installed via Homebrew in seconds
 - Code compiles immediately
 - API is self-explanatory
@@ -93,18 +101,21 @@ This document compares two popular graphics libraries—**Skia** and **Raylib**�
 - Extensive examples available
 
 **Cons:**
+
 - Limited advanced features
 - Simpler rendering pipeline
 
 ### Skia: ⭐⭐⭐ (3/5)
 
 **Pros:**
+
 - Powerful rendering capabilities
 - Industry-standard quality
 - Well-documented API
 - Extensive feature set
 
 **Cons:**
+
 - Complex build process (depot_tools, GN, Ninja)
 - 10-30 minute initial build time
 - Large download (multiple GB with dependencies)
@@ -117,11 +128,13 @@ This document compares two popular graphics libraries—**Skia** and **Raylib**�
 ### Drawing a Circle
 
 **Raylib:**
+
 ```c
 DrawCircle(x, y, radius, color);
 ```
 
 **Skia:**
+
 ```cpp
 SkPaint paint;
 paint.setColor(SK_ColorBLACK);
@@ -132,6 +145,7 @@ canvas->drawCircle(x, y, radius, paint);
 ### Drawing a Bezier Curve
 
 **Raylib:**
+
 ```c
 // Manually draw segments
 for (int i = 0; i < segments; i++) {
@@ -144,6 +158,7 @@ for (int i = 0; i < segments; i++) {
 ```
 
 **Skia:**
+
 ```cpp
 SkPath path;
 path.moveTo(start);
@@ -164,12 +179,14 @@ canvas->drawPath(path, paint);
 ### Expected Results
 
 **Raylib WASM:**
+
 - Bundle size: ~300-500 KB
 - Load time: <1 second
 - FPS: 60 (good browser support)
 - Compatibility: Excellent
 
 **Skia CanvasKit WASM:**
+
 - Bundle size: ~1.8 MB compressed
 - Load time: 1-3 seconds
 - FPS: 60 (highly optimized)
@@ -204,17 +221,20 @@ For a **robot face interface on Jetson Nano + web dashboard**:
 ### Recommendation: **Start with Raylib, migrate to Skia if needed**
 
 **Phase 1 (Raylib):**
+
 1. ✅ Prove the concept quickly
 2. ✅ Test on Jetson Nano hardware
 3. ✅ Iterate on animation timings
 4. ✅ Get user feedback
 
 **Phase 2 (Optional Skia):**
+
 - If visual quality becomes critical
 - If you need advanced effects (blur, shadows, gradients)
 - If you want to match Chrome/Android quality standards
 
 **Hybrid Approach:**
+
 - Use **Raylib** for robot-side rendering (Jetson Nano)
 - Use **Skia CanvasKit** for web dashboard (browsers)
 - Different libraries, same visual output
@@ -223,18 +243,18 @@ For a **robot face interface on Jetson Nano + web dashboard**:
 
 ## Benchmark Summary (Projected)
 
-| Metric | Raylib | Skia | Winner |
-|--------|--------|------|--------|
-| **Build Speed** | ⚡⚡⚡⚡⚡ 2s | ⚡ 15-30min | **Raylib** |
-| **Binary Size** | 📦 34 KB | 📦 ~1-2 MB | **Raylib** |
-| **Rendering Quality** | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | **Skia** |
-| **API Simplicity** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | **Raylib** |
-| **Performance (Native)** | 60 FPS | 60 FPS | **Tie** |
-| **Performance (WASM)** | 60 FPS | 60 FPS | **Tie** |
-| **WASM Bundle Size** | ~400 KB | ~1.8 MB | **Raylib** |
-| **Advanced Features** | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ | **Skia** |
-| **Learning Curve** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | **Raylib** |
-| **Production Readiness** | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | **Skia** |
+| Metric                   | Raylib        | Skia        | Winner     |
+| ------------------------ | ------------- | ----------- | ---------- |
+| **Build Speed**          | ⚡⚡⚡⚡⚡ 2s | ⚡ 15-30min | **Raylib** |
+| **Binary Size**          | 📦 34 KB      | 📦 ~1-2 MB  | **Raylib** |
+| **Rendering Quality**    | ⭐⭐⭐⭐      | ⭐⭐⭐⭐⭐  | **Skia**   |
+| **API Simplicity**       | ⭐⭐⭐⭐⭐    | ⭐⭐⭐      | **Raylib** |
+| **Performance (Native)** | 60 FPS        | 60 FPS      | **Tie**    |
+| **Performance (WASM)**   | 60 FPS        | 60 FPS      | **Tie**    |
+| **WASM Bundle Size**     | ~400 KB       | ~1.8 MB     | **Raylib** |
+| **Advanced Features**    | ⭐⭐⭐        | ⭐⭐⭐⭐⭐  | **Skia**   |
+| **Learning Curve**       | ⭐⭐⭐⭐⭐    | ⭐⭐⭐      | **Raylib** |
+| **Production Readiness** | ⭐⭐⭐⭐      | ⭐⭐⭐⭐⭐  | **Skia**   |
 
 ---
 
@@ -243,12 +263,14 @@ For a **robot face interface on Jetson Nano + web dashboard**:
 Both libraries are excellent choices, but for different reasons:
 
 **Raylib is perfect for:**
+
 - Getting started quickly
 - Prototyping robot interfaces
 - Embedded systems (Jetson Nano)
 - When simplicity matters more than pixel-perfect rendering
 
 **Skia is perfect for:**
+
 - When visual quality is paramount
 - Large-scale production applications
 - When you need the same engine as Chrome/Android/Flutter
@@ -270,6 +292,6 @@ Start with Raylib. It's already working, compiles in 2 seconds, and produces a 3
 
 ---
 
-*Last updated: 2025-10-28*
-*Platform: macOS M3 Pro (ARM64)*
-*Compiler: AppleClang 17.0.0*
+_Last updated: 2025-10-28_
+_Platform: macOS M3 Pro (ARM64)_
+_Compiler: AppleClang 17.0.0_

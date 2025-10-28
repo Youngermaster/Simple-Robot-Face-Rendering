@@ -91,6 +91,7 @@ source ./emsdk_env.sh
 ## Performance Comparison
 
 See `docs/comparison.md` for detailed performance metrics including:
+
 - Native binary sizes
 - FPS performance
 - WASM bundle sizes
@@ -110,11 +111,13 @@ See `docs/comparison.md` for detailed performance metrics including:
 ### Rendering Features
 
 **Raylib**:
+
 - Simple 2D API with immediate mode rendering
 - Built-in shape primitives and Bezier curves
 - Cross-platform compatibility
 
 **Skia**:
+
 - Advanced 2D graphics with antialiasing
 - Path-based rendering with effects
 - Used by Chrome, Android, and Flutter
