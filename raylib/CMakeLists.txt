@@ -8,21 +8,39 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Find Raylib
+# Add Homebrew paths to CMAKE_PREFIX_PATH for better detection
+if(APPLE)
+    list(APPEND CMAKE_PREFIX_PATH "/opt/homebrew" "/usr/local")
+endif()
+
 find_package(raylib QUIET)
 
-if (NOT raylib_FOUND)
+if (raylib_FOUND)
+    message(STATUS "Found raylib via CMake config")
+    set(RAYLIB_LIBRARIES raylib)
+else()
     # Try pkg-config as fallback
     find_package(PkgConfig)
     if (PkgConfig_FOUND)
         pkg_check_modules(RAYLIB QUIET raylib)
+        if (RAYLIB_FOUND)
+            message(STATUS "Found raylib via pkg-config")
+        endif()
     endif()
 
     if (NOT RAYLIB_FOUND)
-        message(STATUS "Raylib not found via CMake or pkg-config, trying manual paths...")
+        message(STATUS "Raylib not found via CMake or pkg-config, using manual paths...")
         # Common installation paths for macOS (Homebrew)
         set(RAYLIB_INCLUDE_DIRS "/opt/homebrew/include")
         set(RAYLIB_LIBRARY_DIRS "/opt/homebrew/lib")
         set(RAYLIB_LIBRARIES "raylib")
+
+        # Verify the paths exist
+        if(EXISTS "${RAYLIB_INCLUDE_DIRS}/raylib.h" AND EXISTS "${RAYLIB_LIBRARY_DIRS}/libraylib.dylib")
+            message(STATUS "Verified raylib installation at ${RAYLIB_INCLUDE_DIRS}")
+        else()
+            message(FATAL_ERROR "Raylib not found! Please install with: brew install raylib")
+        endif()
     endif()
 endif()
 
@@ -32,8 +50,10 @@ include_directories(
     ${RAYLIB_INCLUDE_DIRS}
 )
 
-# Link directories
-link_directories(${RAYLIB_LIBRARY_DIRS})
+# Link directories (only needed for manual path setup)
+if(DEFINED RAYLIB_LIBRARY_DIRS)
+    link_directories(${RAYLIB_LIBRARY_DIRS})
+endif()
 
 # Build options
 option(BUILD_ORIGINAL "Build the original monolithic version" ON)
