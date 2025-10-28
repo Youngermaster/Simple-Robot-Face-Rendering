@@ -47,7 +47,8 @@ build/
 *.html.mem
 *.data
 emsdk/
-skia/
+skia-lib/
+depot_tools/
 .DS_Store
 *.pyc
 __pycache__/

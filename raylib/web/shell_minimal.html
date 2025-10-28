@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en-us">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Raylib Robot Face - WASM</title>
+    <style>
+        body {
+            font-family: arial;
+            margin: 0;
+            padding: 0;
+            background: #2c3e50;
+        }
+
+        .container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #canvas {
+            border: 2px solid #34495e;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        #status {
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div id="status">Loading...</div>
+        <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+    </div>
+    <script type='text/javascript'>
+        var statusElement = document.getElementById('status');
+        var canvas = document.getElementById('canvas');
+
+        var Module = {
+            preRun: [],
+            postRun: [],
+            print: (function () {
+                return function (text) {
+                    console.log(text);
+                };
+            })(),
+            printErr: function (text) {
+                console.error(text);
+            },
+            canvas: (function () {
+                canvas.addEventListener("webglcontextlost", function (e) {
+                    alert('WebGL context lost. You will need to reload the page.');
+                    e.preventDefault();
+                }, false);
+                return canvas;
+            })(),
+            setStatus: function (text) {
+                if (text) {
+                    console.log(text);
+                    statusElement.innerHTML = text;
+                } else {
+                    statusElement.style.display = 'none';
+                }
+            },
+            totalDependencies: 0,
+            monitorRunDependencies: function (left) {
+                this.totalDependencies = Math.max(this.totalDependencies, left);
+                Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies - left) + '/' + this.totalDependencies + ')' : '');
+            }
+        };
+        Module.setStatus('Downloading...');
+        window.onerror = function (event) {
+            Module.setStatus('Exception thrown, see JavaScript console');
+        };
+    </script>
+    {{{ SCRIPT }}}
+</body>
+
+</html>

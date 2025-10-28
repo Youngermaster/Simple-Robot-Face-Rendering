@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robot Face: Skia vs Raylib Comparison</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #718096;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 1200px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            border: 2px solid #e2e8f0;
+            padding: 25px;
+            border-radius: 12px;
+            background: #f7fafc;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .panel:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .panel h2 {
+            margin-bottom: 15px;
+            color: #2d3748;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.5em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-raylib {
+            background: #48bb78;
+            color: white;
+        }
+
+        .badge-skia {
+            background: #4299e1;
+            color: white;
+        }
+
+        canvas {
+            border: 2px solid #cbd5e0;
+            width: 100%;
+            max-width: 800px;
+            border-radius: 8px;
+            background: white;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .metrics {
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.8;
+            border: 1px solid #e2e8f0;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .metric-row:last-child {
+            border-bottom: none;
+        }
+
+        .metric-label {
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .metric-value {
+            color: #2d3748;
+            font-weight: 700;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #718096;
+            font-style: italic;
+        }
+
+        .info-banner {
+            background: #edf2f7;
+            border-left: 4px solid #4299e1;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            border-radius: 4px;
+        }
+
+        .info-banner p {
+            color: #2d3748;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🤖 Robot Face Rendering Comparison</h1>
+        <p class="subtitle">Comparing Skia vs Raylib performance on WebAssembly</p>
+
+        <div class="info-banner">
+            <p>
+                <strong>Controls:</strong> H=Happy, S=Sad, N=Neutral, Click=Blink, ESC=Exit<br>
+                Both implementations render an animated robot face with automatic blinking and emotion controls.
+            </p>
+        </div>
+
+        <div class="comparison">
+            <!-- Raylib Panel -->
+            <div class="panel">
+                <h2>
+                    Raylib
+                    <span class="badge badge-raylib">WASM</span>
+                </h2>
+                <div class="loading" id="raylib-loading">Loading Raylib WASM module...</div>
+                <canvas id="raylib-canvas" width="800" height="600" style="display: none;"></canvas>
+                <div class="controls">
+                    <button onclick="raylibSetEmotion(1.0)" title="Happy">😊 Happy</button>
+                    <button onclick="raylibSetEmotion(0.5)" title="Neutral">😐 Neutral</button>
+                    <button onclick="raylibSetEmotion(0.0)" title="Sad">😢 Sad</button>
+                    <button onclick="raylibBlink()" title="Trigger Blink">👁️ Blink</button>
+                </div>
+                <div class="metrics" id="raylib-metrics">
+                    <div class="metric-row">
+                        <span class="metric-label">FPS:</span>
+                        <span class="metric-value" id="raylib-fps">--</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Frame Time:</span>
+                        <span class="metric-value" id="raylib-frametime">-- ms</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">WASM Size:</span>
+                        <span class="metric-value" id="raylib-size">-- KB</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Load Time:</span>
+                        <span class="metric-value" id="raylib-loadtime">-- ms</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skia Panel -->
+            <div class="panel">
+                <h2>
+                    Skia CanvasKit
+                    <span class="badge badge-skia">WASM</span>
+                </h2>
+                <div class="loading" id="skia-loading">Loading Skia CanvasKit module...</div>
+                <canvas id="skia-canvas" width="800" height="600" style="display: none;"></canvas>
+                <div class="controls">
+                    <button onclick="skiaSetEmotion(1.0)" title="Happy">😊 Happy</button>
+                    <button onclick="skiaSetEmotion(0.5)" title="Neutral">😐 Neutral</button>
+                    <button onclick="skiaSetEmotion(0.0)" title="Sad">😢 Sad</button>
+                    <button onclick="skiaBlink()" title="Trigger Blink">👁️ Blink</button>
+                </div>
+                <div class="metrics" id="skia-metrics">
+                    <div class="metric-row">
+                        <span class="metric-label">FPS:</span>
+                        <span class="metric-value" id="skia-fps">--</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Frame Time:</span>
+                        <span class="metric-value" id="skia-frametime">-- ms</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">WASM Size:</span>
+                        <span class="metric-value" id="skia-size">-- KB</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Load Time:</span>
+                        <span class="metric-value" id="skia-loadtime">-- ms</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Placeholder functions for Raylib controls
+        function raylibSetEmotion(value) {
+            console.log('Raylib: Set emotion to', value);
+            // Will be implemented by the Raylib WASM module
+        }
+
+        function raylibBlink() {
+            console.log('Raylib: Trigger blink');
+            // Will be implemented by the Raylib WASM module
+        }
+
+        // Placeholder functions for Skia controls
+        function skiaSetEmotion(value) {
+            console.log('Skia: Set emotion to', value);
+            // Will be implemented by the Skia WASM module
+        }
+
+        function skiaBlink() {
+            console.log('Skia: Trigger blink');
+            // Will be implemented by the Skia WASM module
+        }
+
+        // Load Raylib WASM (if available)
+        const raylibScript = document.createElement('script');
+        raylibScript.src = '../raylib/web/robot_face_raylib.js';
+        raylibScript.onerror = () => {
+            document.getElementById('raylib-loading').innerHTML =
+                '<strong style="color: #e53e3e;">Raylib WASM not built yet.</strong><br>Run the build script to generate WASM files.';
+        };
+        raylibScript.onload = () => {
+            document.getElementById('raylib-canvas').style.display = 'block';
+            document.getElementById('raylib-loading').style.display = 'none';
+        };
+        document.body.appendChild(raylibScript);
+
+        // Load Skia WASM (if available)
+        const skiaScript = document.createElement('script');
+        skiaScript.src = '../skia/web/robot_face_skia.js';
+        skiaScript.onerror = () => {
+            document.getElementById('skia-loading').innerHTML =
+                '<strong style="color: #e53e3e;">Skia WASM not built yet.</strong><br>Run the build script to generate WASM files.';
+        };
+        skiaScript.onload = () => {
+            document.getElementById('skia-canvas').style.display = 'block';
+            document.getElementById('skia-loading').style.display = 'none';
+        };
+        document.body.appendChild(skiaScript);
+    </script>
+</body>
+
+</html>
