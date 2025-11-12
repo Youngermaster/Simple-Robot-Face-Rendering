@@ -1,0 +1,42 @@
+# Build directories
+build/
+*/build/
+*/web_output/
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+
+# Compiled binaries
+*.exe
+*.out
+*.app
+*.dylib
+*.so
+*.a
+
+# WASM outputs
+*.wasm
+*.js
+*.html
+*.data
+*.mem
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+*.dSYM/
+
+# Emscripten
+emsdk/
+
+# Logs
+*.log
