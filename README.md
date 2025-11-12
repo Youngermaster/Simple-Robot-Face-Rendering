@@ -2,6 +2,19 @@
 
 A comprehensive comparison of **Skia** vs **Raylib** graphics libraries by implementing an animated robot face renderer with both native (macOS ARM64) and WebAssembly builds.
 
+
+## New: Raylib Playground
+
+**Looking to learn Raylib?** Check out [`raylib-playground/`](./raylib-playground) for professional C++ examples:
+
+- **01-solar-system** - Orbital mechanics with physics simulation
+- **02-ui-components** - Themes, buttons, and HSV color picker
+- **03-particle-system** - 5 emitter types with physics (fire, snow, explosions)
+- **04-bezier-curves** - Interactive curve editor (perfect for robot face expressions!)
+
+Each example includes native + WASM builds, separated headers/implementation, and comprehensive documentation. [View full docs →](./raylib-playground/README.md)
+
+
 ## Features
 
 - **Animated Robot Face**: Two eyes with blinking animation and an expressive mouth
