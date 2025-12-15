@@ -1,0 +1,50 @@
+<html lang=en-us>
+
+<head>
+  <meta charset=utf-8>
+  <meta content="text/html; charset=utf-8" http-equiv=Content-Type>
+  <title>Raylib Robot Face - WASM</title>
+  <style>
+    body {
+      font-family: arial;
+      margin: 0;
+      padding: 0;
+      background: #2c3e50
+    }
+
+    .container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center
+    }
+
+    #canvas {
+      border: 2px solid #34495e;
+      border-radius: 8px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, .5)
+    }
+
+    #status {
+      color: #fff;
+      padding: 20px;
+      text-align: center
+    }
+  </style>
+</head>
+
+<body>
+  <div class=container>
+    <div id=status>Loading...</div><canvas id=canvas oncontextmenu=event.preventDefault()></canvas>
+  </div>
+  <script>var statusElement = document.getElementById("status"), canvas = document.getElementById("canvas"), Module = { preRun: [], postRun: [], print: function (e) { console.log(e) }, printErr: function (e) { console.error(e) }, canvas: (canvas.addEventListener("webglcontextlost", (function (e) { alert("WebGL context lost. You will need to reload the page."), e.preventDefault() }), !1), canvas), setStatus: function (e) { e ? (console.log(e), statusElement.innerHTML = e) : statusElement.style.display = "none" }, totalDependencies: 0, monitorRunDependencies: function (e) { this.totalDependencies = Math.max(this.totalDependencies, e), Module.setStatus(e ? "Preparing... (" + (this.totalDependencies - e) + "/" + this.totalDependencies + ")" : "") } }; Module.setStatus("Downloading..."), window.onerror = function (e) { Module.setStatus("Exception thrown, see JavaScript console") }
+  </script>
+  <script async src=robot_face_raylib.js></script>
+</body>
+
+</html>
