@@ -341,7 +341,6 @@ fn keyboard_input_system(
     mut emotion: ResMut<Emotion>,
     mut blink_query: Query<&mut Blinking>,
     mut pupil_query: Query<&mut Pupil>,
-    mut exit: MessageWriter<AppExit>,
 ) {
     // Emotion controls
     if keyboard.just_pressed(KeyCode::KeyH) {
@@ -375,9 +374,10 @@ fn keyboard_input_system(
         }
     }
 
-    // Quit
+    // Quit - Use immediate exit to avoid macOS hang issues
     if keyboard.just_pressed(KeyCode::Escape) {
-        exit.write(AppExit::Success);
+        info!("ESC pressed - exiting application");
+        std::process::exit(0);
     }
 }
 
