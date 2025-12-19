@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robot Face Rendering - Bevy WASM</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        h1 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .emoji {
+            font-size: 3em;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        #loading {
+            color: white;
+            font-size: 1.2em;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        canvas {
+            display: block;
+            margin: 20px auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 100%;
+            height: auto;
+        }
+
+        .info {
+            color: white;
+            margin-top: 20px;
+            font-size: 0.9em;
+            line-height: 1.6;
+            text-align: left;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .info strong {
+            color: #ffd700;
+        }
+
+        #error {
+            color: #ff6b6b;
+            background: rgba(255, 0, 0, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 20px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9em;
+        }
+
+        footer a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="emoji">🤖</div>
+        <h1>Robot Face Rendering</h1>
+
+        <div id="loading">
+            <div class="spinner"></div>
+            <p>Loading Bevy WASM...</p>
+        </div>
+
+        <div id="error"></div>
+
+        <canvas id="bevy"></canvas>
+
+        <div class="info">
+            <strong>Controls:</strong><br>
+            <kbd>H</kbd> - Happy 😊<br>
+            <kbd>S</kbd> - Sad 😢<br>
+            <kbd>N</kbd> - Neutral 😐<br>
+            <kbd>B</kbd> - Blink 👁️<br>
+            <kbd>L</kbd> - Look Around 👀<br>
+            <kbd>ESC</kbd> - Quit
+        </div>
+    </div>
+
+    <footer>
+        Built with <a href="https://bevyengine.org" target="_blank">Bevy Engine</a> 🦀
+    </footer>
+
+    <script type="module">
+        const canvas = document.getElementById("bevy");
+        const loading = document.getElementById("loading");
+        const errorDiv = document.getElementById("error");
+
+        function showError(message) {
+            errorDiv.textContent = `Error: ${message}`;
+            errorDiv.style.display = "block";
+            loading.classList.add("hidden");
+        }
+
+        // Check for WebAssembly support
+        if (!("WebAssembly" in window)) {
+            showError("WebAssembly is not supported in your browser. Please use a modern browser.");
+        } else {
+            // Import and run the WASM module
+            import("./robot-face-rendering-bevy.js")
+                .then(async (module) => {
+                    try {
+                        await module.default();
+                        loading.classList.add("hidden");
+                        console.log("Bevy WASM loaded successfully!");
+                    } catch (e) {
+                        showError(`Failed to initialize: ${e.message}`);
+                        console.error(e);
+                    }
+                })
+                .catch((e) => {
+                    showError(`Failed to load WASM module: ${e.message}`);
+                    console.error(e);
+                });
+        }
+
+        // Prevent default behavior for keyboard shortcuts
+        document.addEventListener("keydown", (e) => {
+            if (["KeyH", "KeyS", "KeyN", "KeyB", "KeyL", "Escape"].includes(e.code)) {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>
