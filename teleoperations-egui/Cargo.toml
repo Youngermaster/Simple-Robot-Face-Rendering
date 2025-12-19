@@ -1,0 +1,32 @@
+[package]
+name = "teleoperations-egui"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# GUI Framework
+eframe = "0.30.0"
+egui = "0.30.0"
+egui_plot = "0.30.0"
+
+# Async Runtime & Web Server
+tokio = { version = "1.42", features = ["full"] }
+axum = { version = "0.8", features = ["ws"] }
+tower-http = { version = "0.6", features = ["cors"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Async Channels
+tokio = { version = "1.42", features = ["sync", "rt-multi-thread", "macros"] }
+futures-util = "0.3"
+
+# Utilities
+chrono = "0.4"
+tracing = "0.1"
+tracing-subscriber = "0.3"
+
+[profile.release]
+opt-level = 3
+lto = true
