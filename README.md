@@ -2,18 +2,9 @@
 
 A comprehensive exploration of modern graphics and UI frameworks through practical implementations. This repository compares **Skia**, **Raylib**, **Bevy**, and **egui** by building real-world applications including animated robot faces and developer monitoring tools.
 
+## Important Note on Skia
 
-## New: Raylib Playground
-
-**Looking to learn Raylib?** Check out [`raylib-playground/`](./raylib-playground) for professional C++ examples:
-
-- **01-solar-system** - Orbital mechanics with physics simulation
-- **02-ui-components** - Themes, buttons, and HSV color picker
-- **03-particle-system** - 5 emitter types with physics (fire, snow, explosions)
-- **04-bezier-curves** - Interactive curve editor (perfect for robot face expressions!)
-
-Each example includes native + WASM builds, separated headers/implementation, and comprehensive documentation. [View full docs →](./raylib-playground/README.md)
-
+While Skia code has been implemented in this repository, the framework proved extremely difficult to build and configure properly. Unlike Raylib, Bevy, and egui which installed seamlessly via package managers and Cargo, Skia requires complex manual compilation and dependency management. The Skia implementation remains untested due to build configuration challenges. This difficulty is itself an important data point when evaluating frameworks for production use.
 
 ## Projects Overview
 
@@ -242,6 +233,8 @@ See `docs/comparison.md` for detailed performance metrics including:
 |---------|------|--------|------|------|
 | **Primary Use Case** | 2D graphics engine | Game framework | Game engine | Immediate-mode UI |
 | **Language** | C++ | C | Rust | Rust |
+| **Setup/Installation** | ★ (Very difficult) | ★★★★★ (brew install) | ★★★★★ (cargo add) | ★★★★★ (cargo add) |
+| **WASM Setup** | ★★ (Complex build) | ★★★★★ (Straightforward) | ★★★★★ (cargo build) | ★★★★★ (cargo build) |
 | **Rendering Quality** | ★★★★★ | ★★★★ | ★★★★ | ★★★ |
 | **API Simplicity** | ★★★ | ★★★★★ | ★★★ | ★★★★★ |
 | **Performance** | ★★★★★ | ★★★★ | ★★★★★ | ★★★★ |
@@ -303,17 +296,35 @@ See `docs/comparison.md` for detailed performance metrics including:
 
 This repository demonstrates practical implementations across four major graphics/UI frameworks, each with distinct strengths:
 
-**Skia** excels at production-quality 2D rendering with battle-tested stability from billions of Chrome/Android devices. The API is complex but powerful, making it ideal for applications where visual quality cannot be compromised.
+**Skia** excels at production-quality 2D rendering with battle-tested stability from billions of Chrome/Android devices. However, the complex build system and manual dependency management make it extremely difficult to set up compared to modern alternatives. While the API is powerful, the setup friction alone makes it hard to recommend for new projects unless you absolutely need its specific capabilities and have dedicated build engineering support.
 
-**Raylib** provides the gentlest learning curve with a delightfully simple API. Perfect for beginners, prototypes, and situations where getting something working quickly matters more than architectural sophistication.
+**Raylib** provides the gentlest learning curve with a delightfully simple API and trivial installation via package managers. Perfect for beginners, prototypes, and situations where getting something working quickly matters more than architectural sophistication. WASM builds are straightforward with clear documentation.
 
-**Bevy** brings modern game engine architecture to Rust with its Entity Component System. The type system catches bugs at compile time, and the modular design scales well to complex applications. Hot reload and strong tooling make iteration fast.
+**Bevy** brings modern game engine architecture to Rust with its Entity Component System. The type system catches bugs at compile time, and the modular design scales well to complex applications. Installation is seamless via Cargo, and WASM support works out of the box. Hot reload and strong tooling make iteration fast.
 
-**egui** redefines immediate-mode UI with Rust safety. The reactive model eliminates state synchronization bugs, and the library feels native to Rust. Exceptional for developer tools where UI responsiveness and ease of modification are paramount.
+**egui** redefines immediate-mode UI with Rust safety. The reactive model eliminates state synchronization bugs, and the library feels native to Rust. Exceptional for developer tools where UI responsiveness and ease of modification are paramount. Like Bevy, installation is a single `cargo add` command and WASM builds work immediately.
 
 The **Clean Architecture refactoring** of the egui teleoperation system demonstrates how to structure Rust applications for maintainability. By separating domain logic, application services, infrastructure adapters, and presentation layers, the codebase remains understandable and testable even as complexity grows.
 
-All implementations are production-ready starting points for robotics interfaces, monitoring dashboards, or interactive visualizations. The code prioritizes clarity and best practices over cleverness.
+**Key Takeaway:** Raylib, Bevy, and egui all installed and built successfully within minutes, including WASM targets. Skia required hours of troubleshooting without success. This practical experience strongly favors modern tooling with good package management over legacy libraries, regardless of theoretical performance advantages.
+
+## Raylib Playground
+
+Looking to learn Raylib in depth? The [`raylib-playground/`](./raylib-playground) directory contains professional C++ examples demonstrating advanced techniques:
+
+- **01-solar-system** - Orbital mechanics with physics simulation
+- **02-ui-components** - Theme system, interactive buttons, HSV color picker
+- **03-particle-system** - 5 emitter types with physics (fire, snow, explosions, fountains, rain)
+- **04-bezier-curves** - Interactive curve editor with control points (perfect for understanding robot face expressions)
+
+Each example includes:
+- Native macOS ARM64 builds
+- WebAssembly builds with Emscripten
+- Separated header/implementation files
+- Comprehensive inline documentation
+- Performance optimizations
+
+These examples go beyond basic tutorials to show production-ready patterns like proper resource management, state machines, and performance profiling. [View full documentation →](./raylib-playground/README.md)
 
 ## License
 
