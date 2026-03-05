@@ -1,6 +1,6 @@
 # Graphics Frameworks Exploration: Robot Face Rendering & Developer Tools
 
-A comprehensive exploration of modern graphics and UI frameworks through practical implementations. This repository compares **Skia**, **Raylib**, **Bevy**, and **egui** by building real-world applications including animated robot faces and developer monitoring tools.
+A comprehensive exploration of modern graphics and UI frameworks through practical implementations. This repository compares **Skia**, **Raylib**, **Bevy**, **WGPU**, and **egui** by building real-world applications including animated robot faces and developer monitoring tools.
 
 ## Important Note on Skia
 
@@ -35,7 +35,20 @@ A professional-grade monitoring dashboard built with **egui**, following Clean A
 
 [View egui implementation →](./teleoperations-egui/)
 
-### 3. Skia vs Raylib Comparison
+### 3. WGPU Robot Face (Rust + Pure GPU)
+
+An animated robot face rendered entirely by a **WGSL fragment shader** — no 2D rendering library. Every pixel is computed with Signed Distance Field math directly on the GPU, producing smooth, resolution-independent shapes with glow effects and LED grid eyes.
+
+**Key Features:**
+- Zero vertex buffers — fullscreen triangle trick via `@builtin(vertex_index)`
+- SDF-based shapes: rounded rectangles, parabolic mouth, radial glow halos
+- 8×4 LED dot grid with time-based shimmer inside each eye
+- Same codebase targets Metal/Vulkan/DX12 native **and** WebGL2/WASM
+- Async WGPU init bridged to winit's event loop on both native and WASM
+
+[View WGPU implementation →](./wgpu/)
+
+### 4. Skia vs Raylib Comparison
 
 Production-grade graphics library comparison implementing identical robot faces in both frameworks, with native and WASM builds for objective performance analysis.
 
@@ -76,6 +89,15 @@ Production-grade graphics library comparison implementing identical robot faces 
 │   │   ├── imu_sensor.py
 │   │   └── occupancy_sensor.py
 │   └── Cargo.toml
+│
+├── wgpu/                          # WGPU (Rust) — pure GPU / SDF shaders
+│   ├── src/
+│   │   ├── app.rs                 # winit event loop
+│   │   ├── state.rs               # WGPU device/pipeline/render
+│   │   ├── robot_face.rs          # CPU animation + FaceUniforms
+│   │   └── shader.wgsl            # WGSL fragment shader (all rendering)
+│   ├── web/                       # WASM host page + Trunk config
+│   └── build_wasm.sh
 │
 ├── raylib/                        # Raylib C implementation
 │   ├── src/                       # C source code
@@ -135,6 +157,26 @@ python3 python/occupancy_sensor.py
 ```
 
 Server runs on `http://localhost:8080` with WebSocket and HTTP endpoints.
+
+### WGPU Robot Face
+
+```bash
+cd wgpu
+
+# Native (Metal / Vulkan / DX12)
+cargo run --release
+
+# WASM — with trunk (hot-reload dev server)
+cargo install trunk
+trunk serve web/index.html
+# Open http://localhost:8080
+
+# WASM — manual wasm-bindgen build
+./build_wasm.sh
+cd web/wasm && python3 -m http.server 8080
+```
+
+**Controls:** H (Happy), N (Neutral), S (Sad), B (Blink), ESC (Exit)
 
 ### Raylib/Skia Comparison (Native Builds)
 
@@ -229,27 +271,29 @@ See `docs/comparison.md` for detailed performance metrics including:
 
 ### Comprehensive Feature Matrix
 
-| Feature | Skia | Raylib | Bevy | egui |
-|---------|------|--------|------|------|
-| **Primary Use Case** | 2D graphics engine | Game framework | Game engine | Immediate-mode UI |
-| **Language** | C++ | C | Rust | Rust |
-| **Setup/Installation** | ★ (Very difficult) | ★★★★★ (brew install) | ★★★★★ (cargo add) | ★★★★★ (cargo add) |
-| **WASM Setup** | ★★ (Complex build) | ★★★★★ (Straightforward) | ★★★★★ (cargo build) | ★★★★★ (cargo build) |
-| **Rendering Quality** | ★★★★★ | ★★★★ | ★★★★ | ★★★ |
-| **API Simplicity** | ★★★ | ★★★★★ | ★★★ | ★★★★★ |
-| **Performance** | ★★★★★ | ★★★★ | ★★★★★ | ★★★★ |
-| **WASM Support** | ★★★★★ (CanvasKit) | ★★★★ | ★★★★★ | ★★★★★ |
-| **Learning Curve** | Steep | Gentle | Moderate | Gentle |
-| **Architecture** | Retained mode | Immediate mode | ECS | Immediate mode |
-| **Binary Size** | ~10MB | ~2-3MB | ~8MB | ~5MB |
-| **Ecosystem** | Massive (Google) | Active | Growing fast | Rust-focused |
-| **Type Safety** | Manual | Manual | Strong (Rust) | Strong (Rust) |
-| **Compile Times** | Slow | Fast | Moderate | Fast |
-| **Hot Reload** | No | No | Yes (experimental) | Yes (native) |
-| **Built-in UI** | No | Basic | Minimal | Core feature |
-| **Animation System** | Manual | Manual | Built-in | Manual |
-| **3D Support** | No | Yes | Yes | No |
-| **Cross-Platform** | Excellent | Excellent | Excellent | Excellent |
+| Feature | Skia | Raylib | Bevy | WGPU | egui |
+|---------|------|--------|------|------|------|
+| **Primary Use Case** | 2D graphics engine | Game framework | Game engine | Low-level GPU rendering | Immediate-mode UI |
+| **Language** | C++ | C | Rust | Rust | Rust |
+| **Setup/Installation** | ★ (Very difficult) | ★★★★★ (brew install) | ★★★★★ (cargo add) | ★★★★★ (cargo add) | ★★★★★ (cargo add) |
+| **WASM Setup** | ★★ (Complex build) | ★★★★★ (Straightforward) | ★★★★★ (cargo build) | ★★★★★ (cargo build) | ★★★★★ (cargo build) |
+| **Rendering Quality** | ★★★★★ | ★★★★ | ★★★★ | ★★★★★ (GPU-native) | ★★★ |
+| **API Simplicity** | ★★★ | ★★★★★ | ★★★ | ★★ (low-level) | ★★★★★ |
+| **Performance** | ★★★★★ | ★★★★ | ★★★★★ | ★★★★★ | ★★★★ |
+| **WASM Support** | ★★★★★ (CanvasKit) | ★★★★ | ★★★★★ | ★★★★★ (WebGL2) | ★★★★★ |
+| **Learning Curve** | Steep | Gentle | Moderate | Very steep | Gentle |
+| **Architecture** | Retained mode | Immediate mode | ECS | Shader-driven | Immediate mode |
+| **Binary Size** | ~10MB | ~2-3MB | ~8MB | ~5MB | ~5MB |
+| **Ecosystem** | Massive (Google) | Active | Growing fast | Growing (W3C standard) | Rust-focused |
+| **Type Safety** | Manual | Manual | Strong (Rust) | Strong (Rust) | Strong (Rust) |
+| **Compile Times** | Slow | Fast | Moderate | Moderate | Fast |
+| **Hot Reload** | No | No | Yes (experimental) | No | Yes (native) |
+| **Built-in UI** | No | Basic | Minimal | None | Core feature |
+| **Animation System** | Manual | Manual | Built-in | Manual (shader) | Manual |
+| **3D Support** | No | Yes | Yes | Yes (low-level) | No |
+| **Cross-Platform** | Excellent | Excellent | Excellent | Excellent | Excellent |
+| **GPU Direct Access** | No | No | Limited | Full | No |
+| **Custom Shaders** | Limited | Limited | Yes (WGSL/GLSL) | Yes (WGSL) | No |
 
 ### Use Case Recommendations
 
@@ -274,6 +318,13 @@ See `docs/comparison.md` for detailed performance metrics including:
 - Leveraging Rust's safety guarantees
 - Examples: Strategy games, robotics simulators, data visualizations
 
+**Choose WGPU when:**
+- You need full, direct GPU control with custom shaders
+- Rendering logic belongs in shader code (SDF, procedural graphics, raymarching)
+- Cross-backend portability matters (Metal, Vulkan, DX12, WebGL2, WebGPU)
+- You want the lowest-level Rust GPU abstraction without FFI
+- Examples: Custom renderers, visual effects engines, robotics HUDs, GPGPU
+
 **Choose egui when:**
 - Building developer tools or dashboards
 - You need immediate-mode UI reactivity
@@ -283,18 +334,18 @@ See `docs/comparison.md` for detailed performance metrics including:
 
 ### Project Statistics
 
-| Metric | Bevy Robot Face | egui Monitoring | Raylib Face | Skia Face |
-|--------|-----------------|-----------------|-------------|-----------|
-| **Lines of Code** | ~400 (8 files) | ~1400 (13 modules) | ~250 | ~300 |
-| **Architecture** | Modular ECS | Clean Architecture | Single file | Single file |
-| **Dependencies** | Bevy 0.17, rand | egui, axum, tokio | Raylib | Skia |
-| **Compile Time** | ~30s (release) | ~25s (release) | <5s | ~15s |
-| **Runtime Deps** | None | Python (sensors) | SDL2 | SDL2 |
-| **WASM Ready** | Yes | Yes (UI only) | Yes | Yes (CanvasKit) |
+| Metric | Bevy Robot Face | WGPU Robot Face | egui Monitoring | Raylib Face | Skia Face |
+|--------|-----------------|-----------------|-----------------|-------------|-----------|
+| **Lines of Code** | ~400 (8 files) | ~350 (6 files + shader) | ~1400 (13 modules) | ~250 | ~300 |
+| **Architecture** | Modular ECS | Shader-driven GPU | Clean Architecture | Single file | Single file |
+| **Dependencies** | Bevy 0.17, rand | wgpu, winit, bytemuck | egui, axum, tokio | Raylib | Skia |
+| **Compile Time** | ~30s (release) | ~35s (release) | ~25s (release) | <5s | ~15s |
+| **Runtime Deps** | None | None | Python (sensors) | SDL2 | SDL2 |
+| **WASM Ready** | Yes | Yes (WebGL2) | Yes (UI only) | Yes | Yes (CanvasKit) |
 
 ## Summary
 
-This repository demonstrates practical implementations across four major graphics/UI frameworks, each with distinct strengths:
+This repository demonstrates practical implementations across five major graphics/UI frameworks, each with distinct strengths:
 
 **Skia** excels at production-quality 2D rendering with battle-tested stability from billions of Chrome/Android devices. However, the complex build system and manual dependency management make it extremely difficult to set up compared to modern alternatives. While the API is powerful, the setup friction alone makes it hard to recommend for new projects unless you absolutely need its specific capabilities and have dedicated build engineering support.
 
@@ -302,11 +353,13 @@ This repository demonstrates practical implementations across four major graphic
 
 **Bevy** brings modern game engine architecture to Rust with its Entity Component System. The type system catches bugs at compile time, and the modular design scales well to complex applications. Installation is seamless via Cargo, and WASM support works out of the box. Hot reload and strong tooling make iteration fast.
 
+**WGPU** offers the deepest GPU access of any framework here. Instead of a 2D drawing API, rendering logic lives entirely in WGSL shaders — Signed Distance Fields compute every shape, glow, and animation mathematically on the GPU. The result is a resolution-independent, visually rich renderer with no 2D library dependency. The same codebase runs on Metal, Vulkan, DX12, and WebGL2 through a single abstraction layer. The trade-off is a steep learning curve: understanding the GPU pipeline, buffer layouts, bind groups, and shader math is prerequisite knowledge. For robotics HUDs, custom visual effects, or any use case where you want full shader control, WGPU is the correct tool.
+
 **egui** redefines immediate-mode UI with Rust safety. The reactive model eliminates state synchronization bugs, and the library feels native to Rust. Exceptional for developer tools where UI responsiveness and ease of modification are paramount. Like Bevy, installation is a single `cargo add` command and WASM builds work immediately.
 
 The **Clean Architecture refactoring** of the egui teleoperation system demonstrates how to structure Rust applications for maintainability. By separating domain logic, application services, infrastructure adapters, and presentation layers, the codebase remains understandable and testable even as complexity grows.
 
-**Key Takeaway:** Raylib, Bevy, and egui all installed and built successfully within minutes, including WASM targets. Skia required hours of troubleshooting without success. This practical experience strongly favors modern tooling with good package management over legacy libraries, regardless of theoretical performance advantages.
+**Key Takeaway:** Raylib, Bevy, WGPU, and egui all installed and built successfully within minutes, including WASM targets. Skia required hours of troubleshooting without success. This practical experience strongly favors modern tooling with good package management over legacy libraries, regardless of theoretical performance advantages. For robotics embedded displays, the WGPU approach is particularly compelling: one shader file contains the entire visual design, it runs at full GPU speed with no CPU-side draw calls, and the WASM/WebGL2 path means the same face renders identically in a browser dashboard.
 
 ## Raylib Playground
 
