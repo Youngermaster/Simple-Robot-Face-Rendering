@@ -1,3 +1,7 @@
+// Suppress dead-code warnings from the lib crate view — all these are used
+// either by main.rs (native) or by wasm_main below (WASM).
+#![allow(dead_code)]
+
 mod app;
 mod robot_face;
 mod state;

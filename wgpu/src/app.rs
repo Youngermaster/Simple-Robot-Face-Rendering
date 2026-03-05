@@ -13,6 +13,7 @@ use crate::robot_face::RobotFace;
 use crate::state::State;
 
 // Custom event sent back from the async WASM init task
+#[allow(dead_code)] // variant is used only on wasm32
 pub enum AppEvent {
     StateReady(State),
 }
@@ -28,6 +29,7 @@ struct ActiveApp {
 
 // ---- Top-level handler ----
 pub struct App {
+    #[allow(dead_code)] // read on wasm32 via spawn_local closure
     proxy:  EventLoopProxy<AppEvent>,
     inner:  Option<ActiveApp>,
     // WASM: window is created in resumed() but State init is async

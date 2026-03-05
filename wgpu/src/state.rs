@@ -20,7 +20,7 @@ impl State {
         let size = window.inner_size();
 
         // ---- Instance & Surface ----
-        let instance = wgpu::Instance::new(&wgpu::InstanceDescriptor {
+        let instance = wgpu::Instance::new(wgpu::InstanceDescriptor {
             #[cfg(not(target_arch = "wasm32"))]
             backends: wgpu::Backends::PRIMARY,
             #[cfg(target_arch = "wasm32")]
@@ -136,13 +136,13 @@ impl State {
             layout: Some(&pipeline_layout),
             vertex: wgpu::VertexState {
                 module:              &shader,
-                entry_point:         Some("vs_main"),
+                entry_point:         "vs_main",
                 buffers:             &[],    // no vertex buffers — fullscreen triangle
                 compilation_options: Default::default(),
             },
             fragment: Some(wgpu::FragmentState {
                 module:      &shader,
-                entry_point: Some("fs_main"),
+                entry_point: "fs_main",
                 targets:     &[Some(wgpu::ColorTargetState {
                     format:     config.format,
                     blend:      Some(wgpu::BlendState::REPLACE),

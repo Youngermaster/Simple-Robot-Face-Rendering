@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Robot Face — WGPU</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #0a0a0f;
+            color: #00d4d8;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            gap: 1.2rem;
+        }
+
+        h1 {
+            font-size: 1.4rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            opacity: 0.85;
+        }
+
+        #canvas-container {
+            position: relative;
+            border: 1px solid #00d4d840;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 0 40px #00d4d820;
+        }
+
+        /* winit appends its canvas as a child; target it generically */
+        #canvas-container canvas {
+            display: block;
+            width: 800px;
+            height: 600px;
+            max-width: 98vw;
+        }
+
+        #loading {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #0a0a0f;
+            font-size: 1rem;
+            letter-spacing: 0.15em;
+            transition: opacity 0.5s;
+        }
+
+        #loading.hidden { opacity: 0; pointer-events: none; }
+
+        .controls {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .controls kbd {
+            display: inline-block;
+            padding: 0.4rem 0.9rem;
+            border: 1px solid #00d4d870;
+            border-radius: 6px;
+            background: #00d4d810;
+            color: #00d4d8;
+            font-size: 0.85rem;
+            letter-spacing: 0.08em;
+            cursor: default;
+        }
+
+        footer {
+            font-size: 0.72rem;
+            opacity: 0.4;
+            letter-spacing: 0.12em;
+        }
+    </style>
+</head>
+<body>
+    <h1>&#x1F916; Robot Face — WGPU / WebGL2</h1>
+
+    <div id="canvas-container">
+        <div id="loading">Initializing WebGL2&hellip;</div>
+    </div>
+
+    <div class="controls">
+        <kbd>H — Happy</kbd>
+        <kbd>N — Neutral</kbd>
+        <kbd>S — Sad</kbd>
+        <kbd>B — Blink</kbd>
+        <kbd>Esc — exit</kbd>
+    </div>
+
+    <footer>Rendered with WGPU + WGSL shaders (SDF) · WebAssembly</footer>
+
+    <!-- wasm-bindgen generated JS (output by build_wasm.sh / trunk) -->
+    <script type="module">
+        // If built with trunk, it injects the import automatically.
+        // For manual wasm-bindgen builds, load the generated JS here:
+        // import init from './wasm/robot-face-wgpu.js';
+        // await init();
+
+        // Hide loading overlay once a canvas appears inside the container
+        const container = document.getElementById('canvas-container');
+        const loading   = document.getElementById('loading');
+
+        const observer = new MutationObserver(() => {
+            if (container.querySelector('canvas')) {
+                loading.classList.add('hidden');
+                observer.disconnect();
+            }
+        });
+        observer.observe(container, { childList: true, subtree: true });
+
+        // Fallback: also hide after 8 seconds in case canvas was pre-existing
+        setTimeout(() => loading.classList.add('hidden'), 8000);
+    </script>
+</body>
+</html>

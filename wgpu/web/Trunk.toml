@@ -1,0 +1,10 @@
+# Trunk build configuration for robot-face-wgpu
+# https://trunkrs.dev/
+
+[build]
+target = "web/index.html"
+dist   = "web/dist"
+
+# Use the wasm-release profile for smaller output
+[build.env]
+CARGO_PROFILE = "wasm-release"
