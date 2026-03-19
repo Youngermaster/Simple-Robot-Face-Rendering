@@ -1,4 +1,4 @@
-//! Layout constants for a 128×64 OLED display (SH1106 / SSD1306).
+//! Layout constants for a 128x64 OLED display (SH1106 / SSD1306).
 //!
 //! All coordinates and radii are in physical pixels.
 //! Edit this file to port the face to a different display size.

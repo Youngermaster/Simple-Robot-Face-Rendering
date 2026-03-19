@@ -1,0 +1,5 @@
+# Tell the linker where Homebrew installs libraries on Apple Silicon.
+# SDL2 lives at /opt/homebrew/opt/sdl2/lib — without this the linker
+# reports "library 'SDL2' not found" even after `brew install sdl2`.
+[build]
+rustflags = ["-L", "/opt/homebrew/opt/sdl2/lib"]

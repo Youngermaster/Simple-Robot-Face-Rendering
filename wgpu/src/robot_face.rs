@@ -1,7 +1,7 @@
 use bytemuck::{Pod, Zeroable};
 
 /// GPU-facing uniform data (maps 1:1 to WGSL struct FaceUniforms)
-/// Naturally 16-byte aligned (4 × f32) — no padding needed.
+/// Naturally 16-byte aligned (4 x f32) — no padding needed.
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Pod, Zeroable)]
 pub struct FaceUniforms {
