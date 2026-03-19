@@ -1,0 +1,22 @@
+[package]
+name = "robot-face-embedded"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+default = ["simulator"]
+simulator = ["dep:embedded-graphics-simulator"]
+
+[dependencies]
+embedded-graphics = "0.8"
+
+[dependencies.embedded-graphics-simulator]
+version = "0.6"
+optional = true
+
+[profile.dev]
+opt-level = 1
+
+[profile.release]
+opt-level = 3
+lto = "thin"
