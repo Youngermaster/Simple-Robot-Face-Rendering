@@ -13,6 +13,7 @@ While Skia code has been implemented in this repository, the framework proved ex
 An animated robot face built with the **Bevy game engine**, demonstrating Entity Component System architecture and Rust's powerful type system. Features smooth Bezier curve rendering for natural expressions, modular component design, and cross-platform support including WebAssembly.
 
 **Key Features:**
+
 - Clean ECS architecture with separated components, resources, and systems
 - Quadratic Bezier curves for natural mouth expressions
 - Smooth blinking animations with periodic auto-blink
@@ -26,6 +27,7 @@ An animated robot face built with the **Bevy game engine**, demonstrating Entity
 A professional-grade monitoring dashboard built with **egui**, following Clean Architecture principles. Demonstrates real-time sensor data visualization with WebSocket streaming and HTTP APIs, structured in four distinct layers for maximum maintainability.
 
 **Key Features:**
+
 - Clean Architecture: Domain, Application, Infrastructure, Presentation layers
 - Real-time WebSocket streaming for Temperature (10Hz) and IMU (20Hz) sensors
 - HTTP API for Room Occupancy state updates
@@ -40,15 +42,32 @@ A professional-grade monitoring dashboard built with **egui**, following Clean A
 An animated robot face rendered entirely by a **WGSL fragment shader** — no 2D rendering library. Every pixel is computed with Signed Distance Field math directly on the GPU, producing smooth, resolution-independent shapes with glow effects and LED grid eyes.
 
 **Key Features:**
+
 - Zero vertex buffers — fullscreen triangle trick via `@builtin(vertex_index)`
 - SDF-based shapes: rounded rectangles, parabolic mouth, radial glow halos
-- 8×4 LED dot grid with time-based shimmer inside each eye
+- 8x4 LED dot grid with time-based shimmer inside each eye
 - Same codebase targets Metal/Vulkan/DX12 native **and** WebGL2/WASM
 - Async WGPU init bridged to winit's event loop on both native and WASM
 
 [View WGPU implementation →](./wgpu/)
 
-### 4. Skia vs Raylib Comparison
+### 4. embedded-graphics Robot Face (Embedded Rust + OLED)
+
+An animated robot face targeting **real 128x64 OLED hardware** (SH1106 / SSD1306 — common on ESP32, STM32, Jetson Nano GPIO), developed with the `embedded-graphics-simulator` as a desktop harness.
+
+**Key Features:**
+
+- Exact same drawing code runs on simulator today and microcontroller SPI display tomorrow — zero changes
+- No heap allocation: `RobotFace`, `BlinkState`, and `EmotionController` live entirely on the stack (`no_std`-ready)
+- Proper enum state machine for blink (`Open → Closing → Closed → Opening`), not boolean flags
+- 6 discrete emotions: Happy, Neutral, Sad, Angry, Surprised, Thinking — with eyebrows
+- Feature-gated simulator: `--no-default-features` produces a clean `no_std` core
+
+**Controls:** H=Happy N=Neutral S=Sad A=Angry T=Thinking P=surPrised B=Blink Tab=cycle
+
+[View embedded-graphics implementation →](./robot-face-embedded/)
+
+### 5. Skia vs Raylib Comparison
 
 Production-grade graphics library comparison implementing identical robot faces in both frameworks, with native and WASM builds for objective performance analysis.
 
@@ -178,6 +197,20 @@ cd web/wasm && python3 -m http.server 8080
 
 **Controls:** H (Happy), N (Neutral), S (Sad), B (Blink), ESC (Exit)
 
+### embedded-graphics Robot Face (OLED Simulator)
+
+```bash
+cd robot-face-embedded
+
+# Run simulator (512x256 window — 4x scaled 128x64 OLED)
+cargo run
+
+# Verify no_std compatible core compiles without simulator
+cargo check --no-default-features
+```
+
+**Controls:** H=Happy N=Neutral S=Sad A=Angry T=Thinking P=surPrised B=Blink Tab=cycle Esc=quit
+
 ### Raylib/Skia Comparison (Native Builds)
 
 ```bash
@@ -271,33 +304,33 @@ See `docs/comparison.md` for detailed performance metrics including:
 
 ### Comprehensive Feature Matrix
 
-| Feature | Skia | Raylib | Bevy | WGPU | egui |
-|---------|------|--------|------|------|------|
-| **Primary Use Case** | 2D graphics engine | Game framework | Game engine | Low-level GPU rendering | Immediate-mode UI |
-| **Language** | C++ | C | Rust | Rust | Rust |
-| **Setup/Installation** | ★ (Very difficult) | ★★★★★ (brew install) | ★★★★★ (cargo add) | ★★★★★ (cargo add) | ★★★★★ (cargo add) |
-| **WASM Setup** | ★★ (Complex build) | ★★★★★ (Straightforward) | ★★★★★ (cargo build) | ★★★★★ (cargo build) | ★★★★★ (cargo build) |
-| **Rendering Quality** | ★★★★★ | ★★★★ | ★★★★ | ★★★★★ (GPU-native) | ★★★ |
-| **API Simplicity** | ★★★ | ★★★★★ | ★★★ | ★★ (low-level) | ★★★★★ |
-| **Performance** | ★★★★★ | ★★★★ | ★★★★★ | ★★★★★ | ★★★★ |
-| **WASM Support** | ★★★★★ (CanvasKit) | ★★★★ | ★★★★★ | ★★★★★ (WebGL2) | ★★★★★ |
-| **Learning Curve** | Steep | Gentle | Moderate | Very steep | Gentle |
-| **Architecture** | Retained mode | Immediate mode | ECS | Shader-driven | Immediate mode |
-| **Binary Size** | ~10MB | ~2-3MB | ~8MB | ~5MB | ~5MB |
-| **Ecosystem** | Massive (Google) | Active | Growing fast | Growing (W3C standard) | Rust-focused |
-| **Type Safety** | Manual | Manual | Strong (Rust) | Strong (Rust) | Strong (Rust) |
-| **Compile Times** | Slow | Fast | Moderate | Moderate | Fast |
-| **Hot Reload** | No | No | Yes (experimental) | No | Yes (native) |
-| **Built-in UI** | No | Basic | Minimal | None | Core feature |
-| **Animation System** | Manual | Manual | Built-in | Manual (shader) | Manual |
-| **3D Support** | No | Yes | Yes | Yes (low-level) | No |
-| **Cross-Platform** | Excellent | Excellent | Excellent | Excellent | Excellent |
-| **GPU Direct Access** | No | No | Limited | Full | No |
-| **Custom Shaders** | Limited | Limited | Yes (WGSL/GLSL) | Yes (WGSL) | No |
+| Feature                  | Skia               | Raylib               | Bevy              | WGPU                    | egui              | embedded-graphics      |
+| ------------------------ | ------------------ | -------------------- | ----------------- | ----------------------- | ----------------- | ---------------------- |
+| **Primary Use Case**     | 2D graphics engine | Game framework       | Game engine       | Low-level GPU rendering | Immediate-mode UI | Embedded/OLED displays |
+| **Language**             | C++                | C                    | Rust              | Rust                    | Rust              | Rust                   |
+| **Setup/Installation**   | ★ (Very difficult) | ★★★★★ (brew install) | ★★★★★ (cargo add) | ★★★★★ (cargo add)       | ★★★★★ (cargo add) | ★★★★★ (cargo add)      |
+| **WASM Support**         | ★★★★★ (CanvasKit)  | ★★★★                 | ★★★★★             | ★★★★★ (WebGL2)          | ★★★★★             | N/A (targets MCU)      |
+| **Rendering Quality**    | ★★★★★              | ★★★★                 | ★★★★              | ★★★★★ (GPU-native)      | ★★★               | ★★★ (binary pixels)    |
+| **API Simplicity**       | ★★★                | ★★★★★                | ★★★               | ★★ (low-level)          | ★★★★★             | ★★★★★                  |
+| **Performance**          | ★★★★★              | ★★★★                 | ★★★★★             | ★★★★★                   | ★★★★              | ★★★★★ (no heap)        |
+| **Learning Curve**       | Steep              | Gentle               | Moderate          | Very steep              | Gentle            | Gentle                 |
+| **Architecture**         | Retained mode      | Immediate mode       | ECS               | Shader-driven           | Immediate mode    | DrawTarget trait       |
+| **Binary Size**          | ~10MB              | ~2-3MB               | ~8MB              | ~5MB                    | ~5MB              | <100KB (MCU)           |
+| **Ecosystem**            | Massive (Google)   | Active               | Growing fast      | Growing (W3C standard)  | Rust-focused      | Embedded Rust WG       |
+| **Type Safety**          | Manual             | Manual               | Strong (Rust)     | Strong (Rust)           | Strong (Rust)     | Strong (Rust)          |
+| **`no_std` Support**     | No                 | No                   | No                | No                      | No                | **Yes**                |
+| **Real Hardware Target** | Indirect           | Indirect             | No                | No                      | No                | **Yes (SPI/I2C)**      |
+| **Compile Times**        | Slow               | Fast                 | Moderate          | Moderate                | Fast              | Fast                   |
+| **Animation System**     | Manual             | Manual               | Built-in          | Manual (shader)         | Manual            | Manual (state machine) |
+| **3D Support**           | No                 | Yes                  | Yes               | Yes (low-level)         | No                |
+| **Cross-Platform**       | Excellent          | Excellent            | Excellent         | Excellent               | Excellent         |
+| **GPU Direct Access**    | No                 | No                   | Limited           | Full                    | No                |
+| **Custom Shaders**       | Limited            | Limited              | Yes (WGSL/GLSL)   | Yes (WGSL)              | No                |
 
 ### Use Case Recommendations
 
 **Choose Skia when:**
+
 - You need production-grade 2D rendering quality
 - Building browser-based graphics applications
 - Performance and visual quality are critical
@@ -305,6 +338,7 @@ See `docs/comparison.md` for detailed performance metrics including:
 - Examples: Document renderers, vector graphics editors, charting libraries
 
 **Choose Raylib when:**
+
 - Rapid prototyping is the priority
 - You want simple, beginner-friendly API
 - Building games or interactive demos
@@ -312,6 +346,7 @@ See `docs/comparison.md` for detailed performance metrics including:
 - Examples: Game jams, educational projects, indie games
 
 **Choose Bevy when:**
+
 - Building complex games or simulations
 - You want type-safe, modern architecture
 - ECS pattern fits your domain model
@@ -319,6 +354,7 @@ See `docs/comparison.md` for detailed performance metrics including:
 - Examples: Strategy games, robotics simulators, data visualizations
 
 **Choose WGPU when:**
+
 - You need full, direct GPU control with custom shaders
 - Rendering logic belongs in shader code (SDF, procedural graphics, raymarching)
 - Cross-backend portability matters (Metal, Vulkan, DX12, WebGL2, WebGPU)
@@ -326,6 +362,7 @@ See `docs/comparison.md` for detailed performance metrics including:
 - Examples: Custom renderers, visual effects engines, robotics HUDs, GPGPU
 
 **Choose egui when:**
+
 - Building developer tools or dashboards
 - You need immediate-mode UI reactivity
 - Rapid iteration and hot reload are important
@@ -334,14 +371,14 @@ See `docs/comparison.md` for detailed performance metrics including:
 
 ### Project Statistics
 
-| Metric | Bevy Robot Face | WGPU Robot Face | egui Monitoring | Raylib Face | Skia Face |
-|--------|-----------------|-----------------|-----------------|-------------|-----------|
-| **Lines of Code** | ~400 (8 files) | ~350 (6 files + shader) | ~1400 (13 modules) | ~250 | ~300 |
-| **Architecture** | Modular ECS | Shader-driven GPU | Clean Architecture | Single file | Single file |
-| **Dependencies** | Bevy 0.17, rand | wgpu, winit, bytemuck | egui, axum, tokio | Raylib | Skia |
-| **Compile Time** | ~30s (release) | ~35s (release) | ~25s (release) | <5s | ~15s |
-| **Runtime Deps** | None | None | Python (sensors) | SDL2 | SDL2 |
-| **WASM Ready** | Yes | Yes (WebGL2) | Yes (UI only) | Yes | Yes (CanvasKit) |
+| Metric            | Bevy Robot Face | WGPU Robot Face         | egui Monitoring    | Raylib Face | Skia Face       |
+| ----------------- | --------------- | ----------------------- | ------------------ | ----------- | --------------- |
+| **Lines of Code** | ~400 (8 files)  | ~350 (6 files + shader) | ~1400 (13 modules) | ~250        | ~300            |
+| **Architecture**  | Modular ECS     | Shader-driven GPU       | Clean Architecture | Single file | Single file     |
+| **Dependencies**  | Bevy 0.17, rand | wgpu, winit, bytemuck   | egui, axum, tokio  | Raylib      | Skia            |
+| **Compile Time**  | ~30s (release)  | ~35s (release)          | ~25s (release)     | <5s         | ~15s            |
+| **Runtime Deps**  | None            | None                    | Python (sensors)   | SDL2        | SDL2            |
+| **WASM Ready**    | Yes             | Yes (WebGL2)            | Yes (UI only)      | Yes         | Yes (CanvasKit) |
 
 ## Summary
 
@@ -371,6 +408,7 @@ Looking to learn Raylib in depth? The [`raylib-playground/`](./raylib-playground
 - **04-bezier-curves** - Interactive curve editor with control points (perfect for understanding robot face expressions)
 
 Each example includes:
+
 - Native macOS ARM64 builds
 - WebAssembly builds with Emscripten
 - Separated header/implementation files

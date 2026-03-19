@@ -57,11 +57,13 @@ A professional robotics teleoperation and monitoring dashboard built with Rust a
 ### Prerequisites
 
 **Rust:**
+
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
 **Python 3.8+:**
+
 ```bash
 # Install Python dependencies
 cd python
@@ -71,11 +73,13 @@ pip install -r requirements.txt
 ### Running the System
 
 **Step 1: Start the Rust application**
+
 ```bash
 cargo run --release
 ```
 
 This will:
+
 - Start the axum server on `http://localhost:8080`
 - Open the egui monitoring dashboard
 
@@ -95,12 +99,14 @@ python3 python/occupancy_sensor.py
 ## 📊 Sensor Details
 
 ### 1. Temperature Sensor (WebSocket)
+
 - **Endpoint**: `ws://localhost:8080/ws/temperature`
 - **Update Rate**: 10 Hz
 - **Data**: Temperature in Celsius with realistic drift and noise
 - **Visualization**: Real-time line plot
 
 **Example Message:**
+
 ```json
 {
   "value": 23.45,
@@ -109,12 +115,14 @@ python3 python/occupancy_sensor.py
 ```
 
 ### 2. IMU Accelerometer (WebSocket)
+
 - **Endpoint**: `ws://localhost:8080/ws/imu`
 - **Update Rate**: 20 Hz
 - **Data**: 3-axis acceleration (X, Y, Z) in m/s²
 - **Visualization**: Multi-line plot with colored axes
 
 **Example Message:**
+
 ```json
 {
   "x": 0.234,
@@ -124,12 +132,14 @@ python3 python/occupancy_sensor.py
 ```
 
 ### 3. Room Occupancy (HTTP POST)
+
 - **Endpoint**: `POST http://localhost:8080/api/occupancy`
 - **Update Rate**: Every 2 seconds
 - **Data**: Boolean state + people count
 - **Visualization**: Status indicator with visual feedback
 
 **Example Payload:**
+
 ```json
 {
   "occupied": true,
@@ -159,6 +169,7 @@ teleoperations-egui/
 ### Key Dependencies
 
 **Rust:**
+
 - `eframe` & `egui` - Immediate mode GUI
 - `egui_plot` - Real-time plotting
 - `axum` - Web framework (WebSocket + HTTP)
@@ -166,12 +177,14 @@ teleoperations-egui/
 - `serde` - Serialization
 
 **Python:**
+
 - `websockets` - WebSocket client
 - `requests` - HTTP client
 
 ### Adding New Sensors
 
 **1. Define message type** (`src/messages.rs`):
+
 ```rust
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum SensorMessage {
@@ -184,11 +197,13 @@ pub enum SensorMessage {
 ```
 
 **2. Add server endpoint** (`src/server.rs`):
+
 ```rust
 .route("/ws/newsensor", get(new_sensor_handler))
 ```
 
 **3. Add UI panel** (`src/main.rs`):
+
 ```rust
 fn render_new_sensor_panel(&mut self, ui: &mut egui::Ui) {
     // Your visualization code
@@ -196,6 +211,7 @@ fn render_new_sensor_panel(&mut self, ui: &mut egui::Ui) {
 ```
 
 **4. Create Python simulator** (`python/new_sensor.py`):
+
 ```python
 async def send_new_sensor_data():
     async with websockets.connect(WEBSOCKET_URL) as ws:
@@ -205,24 +221,28 @@ async def send_new_sensor_data():
 ## 🎨 UI Features
 
 ### Temperature Panel
+
 - Real-time line plot
 - Current value display
 - Auto-scaling Y-axis
 - 200-point rolling window
 
 ### IMU Panel
+
 - 3-axis color-coded plots (R/G/B for X/Y/Z)
 - Live axis readouts
 - Zoom and pan support
 - Legend with axis labels
 
 ### Occupancy Panel
+
 - Large status indicator (Occupied/Vacant)
 - People counter
 - Last motion timestamp
 - Visual room representation
 
 ### Navigation
+
 - Scrollable panels
 - Runtime counter
 - Connection status indicators
@@ -233,6 +253,7 @@ async def send_new_sensor_data():
 ### Adjust Update Rates
 
 **Python sensors:**
+
 ```python
 # In temperature_sensor.py
 UPDATE_RATE = 0.1  # 10 Hz (faster)
@@ -240,6 +261,7 @@ UPDATE_RATE = 1.0  # 1 Hz (slower)
 ```
 
 **Rust data buffer:**
+
 ```rust
 // In src/main.rs
 const MAX_DATA_POINTS: usize = 200;  // Increase for longer history
@@ -248,6 +270,7 @@ const MAX_DATA_POINTS: usize = 200;  // Increase for longer history
 ### Change Server Port
 
 **In `src/server.rs`:**
+
 ```rust
 let listener = tokio::net::TcpListener::bind("0.0.0.0:8080")
 ```
@@ -258,12 +281,13 @@ let listener = tokio::net::TcpListener::bind("0.0.0.0:8080")
 
 - **Latency**: <10ms end-to-end (sensor → GUI)
 - **Update Rate**: Up to 60 Hz per sensor
-- **Memory**: ~50MB (200 points × 3 sensors)
+- **Memory**: ~50MB (200 points x 3 sensors)
 - **CPU**: <5% (Intel i7 / M3 Pro)
 
 ## 🐛 Troubleshooting
 
 ### Sensors can't connect
+
 ```bash
 # Check if server is running
 curl http://localhost:8080/health
@@ -271,11 +295,13 @@ curl http://localhost:8080/health
 ```
 
 ### No data appearing in GUI
+
 - Verify server logs show "connected" messages
 - Check Python sensor output for errors
 - Ensure firewalls allow localhost connections
 
 ### High CPU usage
+
 - Reduce `MAX_DATA_POINTS` in main.rs
 - Lower Python sensor update rates
 - Disable unused sensors
@@ -305,6 +331,7 @@ MIT License - feel free to use in your robotics projects!
 ## 🤝 Contributing
 
 Contributions welcome! Areas of interest:
+
 - New sensor types
 - Additional visualizations
 - Performance optimizations

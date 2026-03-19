@@ -8,14 +8,14 @@ Runs natively on macOS / Linux / Windows and in the browser via **WebGL2 + WebAs
 
 ## Visual Design
 
-| Element | Description |
-|---------|-------------|
-| Background | Near-black rounded rectangle with a subtle cyan border glow |
-| Eyes | Landscape rounded rectangles with an 8×4 LED dot grid and animated shimmer |
-| Glow | Soft SDF-based halo around each eye |
-| Mouth | Parabolic curve SDF — curves up (happy), flat (neutral), curves down (sad) |
-| Blink | Y-axis scale of the eye SDF smoothly approaches zero and back |
-| Vignette | Radial darkening toward frame corners |
+| Element    | Description                                                                |
+| ---------- | -------------------------------------------------------------------------- |
+| Background | Near-black rounded rectangle with a subtle cyan border glow                |
+| Eyes       | Landscape rounded rectangles with an 8x4 LED dot grid and animated shimmer |
+| Glow       | Soft SDF-based halo around each eye                                        |
+| Mouth      | Parabolic curve SDF — curves up (happy), flat (neutral), curves down (sad) |
+| Blink      | Y-axis scale of the eye SDF smoothly approaches zero and back              |
+| Vignette   | Radial darkening toward frame corners                                      |
 
 ---
 
@@ -80,6 +80,7 @@ The fragment shader runs for every pixel and composes layers via SDF:
 ```
 
 **Key SDF helper** (Inigo Quilez formulation):
+
 ```wgsl
 fn sdf_rounded_box(p: vec2<f32>, b: vec2<f32>, r: f32) -> f32 {
     let q = abs(p) - b + vec2(r, r);
@@ -104,7 +105,7 @@ pub struct FaceUniforms {
 }
 ```
 
-4 × f32 = 16 bytes, naturally aligned — no padding required for std140.
+4 x f32 = 16 bytes, naturally aligned — no padding required for std140.
 
 ---
 
@@ -143,13 +144,13 @@ The WASM build uses `Backends::GL` (WebGL2) and `Limits::downlevel_webgl2_defaul
 
 ## Controls
 
-| Key | Action |
-|-----|--------|
-| `H` | Happy expression (happiness = 1.0) |
-| `N` | Neutral expression (happiness = 0.5) |
-| `S` | Sad expression (happiness = 0.0) |
-| `B` | Trigger manual blink |
-| `Esc` | Exit |
+| Key   | Action                               |
+| ----- | ------------------------------------ |
+| `H`   | Happy expression (happiness = 1.0)   |
+| `N`   | Neutral expression (happiness = 0.5) |
+| `S`   | Sad expression (happiness = 0.0)     |
+| `B`   | Trigger manual blink                 |
+| `Esc` | Exit                                 |
 
 Auto-blink fires every **3 seconds** with a 250 ms sine-smoothed animation.
 
@@ -157,16 +158,16 @@ Auto-blink fires every **3 seconds** with a 250 ms sine-smoothed animation.
 
 ## Dependencies
 
-| Crate | Version | Purpose |
-|-------|---------|---------|
-| `wgpu` | 22 | WebGPU/Metal/Vulkan/DX12 abstraction |
-| `winit` | 0.30 | Cross-platform window + event loop |
-| `bytemuck` | 1 | Safe cast of structs to `&[u8]` for GPU upload |
-| `pollster` | 0.3 | Block on async init on native |
-| `env_logger` | 0.11 | Native logging |
-| `wasm-bindgen` | 0.2 | WASM ↔ JS bridge |
-| `wasm-bindgen-futures` | 0.4 | `spawn_local` for WASM async init |
-| `console_log` / `console_error_panic_hook` | — | Browser console logging & panic traces |
+| Crate                                      | Version | Purpose                                        |
+| ------------------------------------------ | ------- | ---------------------------------------------- |
+| `wgpu`                                     | 22      | WebGPU/Metal/Vulkan/DX12 abstraction           |
+| `winit`                                    | 0.30    | Cross-platform window + event loop             |
+| `bytemuck`                                 | 1       | Safe cast of structs to `&[u8]` for GPU upload |
+| `pollster`                                 | 0.3     | Block on async init on native                  |
+| `env_logger`                               | 0.11    | Native logging                                 |
+| `wasm-bindgen`                             | 0.2     | WASM ↔ JS bridge                               |
+| `wasm-bindgen-futures`                     | 0.4     | `spawn_local` for WASM async init              |
+| `console_log` / `console_error_panic_hook` | —       | Browser console logging & panic traces         |
 
 ---
 

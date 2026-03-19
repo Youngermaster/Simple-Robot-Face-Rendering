@@ -50,7 +50,7 @@ fn glow(d: f32, width: f32) -> f32 {
     return clamp(1.0 - d / width, 0.0, 1.0);
 }
 
-// 8×8 LED dot grid — returns intensity 0..1
+// 8x8 LED dot grid — returns intensity 0..1
 fn led_grid(p: vec2<f32>, density: f32) -> f32 {
     let cell = fract(p * density) - 0.5; // center of each cell
     let dot_r = 0.3;                     // dot radius within cell (relative)

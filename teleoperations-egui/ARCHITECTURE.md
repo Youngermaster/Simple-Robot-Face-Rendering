@@ -81,6 +81,7 @@ A professional robotics monitoring dashboard inspired by Foxglove and Rerun, bui
 ## Data Flow
 
 ### 1. Temperature Sensor Flow
+
 ```
 Python Simulator
   │ Generates: 22.5°C ± drift ± noise
@@ -108,6 +109,7 @@ egui_plot::Plot renders to screen
 ```
 
 ### 2. IMU Sensor Flow
+
 ```
 Python Simulator
   │ Generates: (x, y, z) acceleration vectors
@@ -131,6 +133,7 @@ egui_plot::Plot renders all 3 lines
 ```
 
 ### 3. Occupancy Sensor Flow
+
 ```
 Python Simulator
   │ Simulates: room entry/exit events
@@ -157,22 +160,26 @@ egui painter renders visual indicator
 ## Key Design Decisions
 
 ### 1. Why Broadcast Channel?
+
 - **Fan-out**: One message → multiple receivers
 - **Non-blocking**: Async server doesn't wait for GUI
 - **Decoupling**: Server and GUI are independent
 - **Capacity**: 100 messages buffered (prevent backpressure)
 
 ### 2. Why VecDeque for Data?
+
 - **O(1)** push_back/pop_front (efficient rolling window)
 - **Fixed size**: Prevents unbounded memory growth
 - **Cache-friendly**: Contiguous memory for better performance
 
 ### 3. Why Separate Thread for Server?
+
 - **Non-blocking**: GUI thread stays responsive
 - **Tokio runtime**: Server needs async runtime
 - **Isolation**: Server crashes don't kill GUI
 
 ### 4. Why egui_plot?
+
 - **Real-time**: Designed for live data updates
 - **Lightweight**: Immediate mode (no scene graph)
 - **Integrated**: Native egui integration
@@ -204,23 +211,27 @@ pub enum SensorMessage {
 ## Performance Characteristics
 
 ### Latency
+
 - **WebSocket**: 5-10ms (sensor → GUI)
 - **HTTP**: 10-20ms (sensor → GUI)
 - **GUI Update**: 16ms (60 FPS target)
 
 ### Throughput
+
 - **Temperature**: 10 Hz sustained
 - **IMU**: 20 Hz sustained
 - **Occupancy**: 0.5 Hz sustained
 - **Combined**: 30.5 msgs/sec with no drops
 
 ### Memory
-- **Data buffers**: ~200 KB (200 points × 3 sensors × f32)
+
+- **Data buffers**: ~200 KB (200 points x 3 sensors x f32)
 - **GUI state**: ~10 MB (egui + eframe)
 - **Server**: ~5 MB (axum + tokio)
 - **Total**: ~15 MB (minimal!)
 
 ### CPU
+
 - **Idle**: 0.5% (1 core of M3 Pro)
 - **Active**: 3-5% (during updates)
 - **Peaks**: 10% (during fast scrolling)
@@ -251,6 +262,7 @@ src/
 ## Python Simulator Design
 
 ### Temperature Simulator
+
 ```python
 class TemperatureSensor:
     - current_temp: f64
@@ -265,6 +277,7 @@ class TemperatureSensor:
 ```
 
 ### IMU Simulator
+
 ```python
 class IMUSensor:
     - time: f64 (elapsed time)
@@ -278,6 +291,7 @@ class IMUSensor:
 ```
 
 ### Occupancy Simulator
+
 ```python
 class OccupancySensor:
     - current_count: int
@@ -295,26 +309,31 @@ class OccupancySensor:
 ### Adding New Sensor Types
 
 **1. Define message** (`messages.rs`):
+
 ```rust
 Pressure { value: f32, unit: String, timestamp: i64 }
 ```
 
 **2. Add endpoint** (`server.rs`):
+
 ```rust
 .route("/ws/pressure", get(pressure_websocket_handler))
 ```
 
 **3. Add data buffer** (`main.rs`):
+
 ```rust
 pressure_data: VecDeque<PressureData>
 ```
 
 **4. Add panel** (`main.rs`):
+
 ```rust
 fn render_pressure_panel(&mut self, ui: &mut egui::Ui) { ... }
 ```
 
 **5. Create simulator** (`python/pressure_sensor.py`):
+
 ```python
 async def send_pressure_data(): ...
 ```
@@ -322,16 +341,19 @@ async def send_pressure_data(): ...
 ### Customization Options
 
 **Adjust data window**:
+
 ```rust
 const MAX_DATA_POINTS: usize = 500; // More history
 ```
 
 **Change server port**:
+
 ```rust
 TcpListener::bind("0.0.0.0:3000")
 ```
 
 **Modify update rates**:
+
 ```python
 UPDATE_RATE = 0.05  # 20 Hz
 UPDATE_RATE = 1.0   # 1 Hz
@@ -339,15 +361,15 @@ UPDATE_RATE = 1.0   # 1 Hz
 
 ## Comparison to Foxglove/Rerun
 
-| Feature | Our System | Foxglove | Rerun |
-|---------|------------|----------|-------|
-| **Language** | Rust | TypeScript | Rust |
-| **GUI** | egui (native) | React (web) | egui (native) |
-| **Protocol** | WS + HTTP | ROS bags | Custom |
-| **Data** | Real-time only | Playback | Playback |
-| **Size** | ~15 MB | ~100 MB | ~50 MB |
-| **Startup** | Instant | 2-3s | 1s |
-| **Extensibility** | Code-based | Plugin API | Code-based |
+| Feature           | Our System     | Foxglove    | Rerun         |
+| ----------------- | -------------- | ----------- | ------------- |
+| **Language**      | Rust           | TypeScript  | Rust          |
+| **GUI**           | egui (native)  | React (web) | egui (native) |
+| **Protocol**      | WS + HTTP      | ROS bags    | Custom        |
+| **Data**          | Real-time only | Playback    | Playback      |
+| **Size**          | ~15 MB         | ~100 MB     | ~50 MB        |
+| **Startup**       | Instant        | 2-3s        | 1s            |
+| **Extensibility** | Code-based     | Plugin API  | Code-based    |
 
 ## Future Enhancements
 
